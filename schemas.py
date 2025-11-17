@@ -1,48 +1,82 @@
-"""
-Database Schemas
+from pydantic import BaseModel, Field, HttpUrl
+from typing import List, Optional
 
-Define your MongoDB collection schemas here using Pydantic models.
-These schemas are used for data validation in your application.
+# Global content blocks
+class GlobalSettings(BaseModel):
+    site_title: str = Field(default="Robert Scott — Portfolio")
+    tagline: str = Field(default="Cinematic design, strategy, and visual storytelling")
+    email: str = Field(default="hello@robertscott.com")
+    phone: str = Field(default="+")
+    whatsapp: Optional[str] = None
+    social_links: List[str] = Field(default_factory=list)
+    copyright_text: str = Field(default="© 2025 Robert Scott. All rights reserved.")
 
-Each Pydantic model represents a collection in your database.
-Model name is converted to lowercase for the collection name:
-- User -> "user" collection
-- Product -> "product" collection
-- BlogPost -> "blogs" collection
-"""
+# Home/About
+class Hero(BaseModel):
+    headline: str
+    sub_roles: List[str]
+    tagline: str
+    cta_label: str
+    portrait_url: HttpUrl
+    gallery_urls: List[HttpUrl] = Field(default_factory=list)
 
-from pydantic import BaseModel, Field
-from typing import Optional
+class About(BaseModel):
+    biography: str
+    background: str
+    mission: str
+    cv_url: Optional[HttpUrl] = None
 
-# Example schemas (replace with your own):
+# Services/Skills/Pricing
+class Service(BaseModel):
+    title: str
+    description: str
+    image_url: Optional[HttpUrl] = None
+    price: Optional[str] = None
+    cta_label: Optional[str] = None
 
-class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+class Skill(BaseModel):
+    name: str
+    icon: Optional[str] = None  # store icon key
 
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+class Package(BaseModel):
+    title: str
+    features: List[str]
+    price: Optional[str] = None
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Portfolio/Case Studies
+class PortfolioItem(BaseModel):
+    title: str
+    category: str
+    main_image: HttpUrl
+    images: List[HttpUrl] = Field(default_factory=list)
+    description: str
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class CaseStudy(BaseModel):
+    name: str
+    problem: str
+    approach: str
+    tools: List[str]
+    results: str
+    media: List[HttpUrl] = Field(default_factory=list)
+
+# Testimonials/Blog/Contact/Footer
+class Testimonial(BaseModel):
+    client_name: str
+    review: str
+    client_photo: Optional[HttpUrl] = None
+    brand_logo: Optional[HttpUrl] = None
+    screenshots: List[HttpUrl] = Field(default_factory=list)
+
+class BlogPost(BaseModel):
+    title: str
+    thumbnail: Optional[HttpUrl] = None
+    body: str
+    category: Optional[str] = None
+    publish_date: Optional[str] = None
+
+class ContactBlock(BaseModel):
+    email: str
+    phone: Optional[str] = None
+    whatsapp: Optional[str] = None
+    socials: List[str] = Field(default_factory=list)
+
